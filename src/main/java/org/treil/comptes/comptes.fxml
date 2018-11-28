@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?><?import javafx.scene.layout.VBox?>
+<VBox fx:id="main" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity"
+	  xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1">
+	<children>
+		<MenuBar>
+			<menus>
+				<Menu mnemonicParsing="false" text="Fichier">
+					<items>
+						<MenuItem mnemonicParsing="false" text="Ouvrir ..."/>
+						<MenuItem mnemonicParsing="false" text="Fermer"/>
+						<MenuItem mnemonicParsing="false" text="Quitter"/>
+					</items>
+				</Menu>
+				<Menu mnemonicParsing="false" text="Editer">
+					<items>
+						<MenuItem mnemonicParsing="false" text="Modifier"/>
+					</items>
+				</Menu>
+			</menus>
+		</MenuBar>
+		<TabPane prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE">
+			<tabs>
+				<Tab text="Untitled Tab 1"/>
+				<Tab text="Untitled Tab 2"/>
+			</tabs>
+		</TabPane>
+	</children>
+</VBox>
