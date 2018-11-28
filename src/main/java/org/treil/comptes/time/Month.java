@@ -50,4 +50,9 @@ public class Month implements Comparable<Month> {
         }
         return new Date();
     }
+
+    @Override
+    public String toString() {
+        return id;
+    }
 }

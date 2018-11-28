@@ -4,7 +4,10 @@ import org.jetbrains.annotations.NotNull;
 import org.treil.comptes.formatter.CentsFormatter;
 import org.treil.comptes.time.Month;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author Nicolas
@@ -12,17 +15,13 @@ import java.util.*;
  */
 public class MonthList {
     private final Month month;
-    private final Date nextMonth;
     private boolean complete = false;
     private int totalCents = 0;
-    private final List<Expense> expenses = new ArrayList<Expense>();
+    private int endBalanceCents = 0;
+    private final List<Expense> expenses = new ArrayList<>();
 
     public MonthList(@NotNull Date date) {
         month = new Month(date);
-        Calendar calendar = new GregorianCalendar();
-        calendar.setTime(month.toDate());
-        calendar.add(Calendar.MONTH, 1);
-        nextMonth = calendar.getTime();
     }
 
     public Month getMonth() {
@@ -42,5 +41,21 @@ public class MonthList {
                 ", totalCents=" + CentsFormatter.format(totalCents, null) +
                 ", expenses=" + expenses.size() +
                 '}';
+    }
+
+    public void updateBalance(int startBalanceCents) {
+        endBalanceCents = startBalanceCents + totalCents;
+    }
+
+    public int getEndBalanceCents() {
+        return endBalanceCents;
+    }
+
+    public int getTotalCents() {
+        return totalCents;
+    }
+
+    public List<Expense> getExpenses() {
+        return Collections.unmodifiableList(expenses);
     }
 }

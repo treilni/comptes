@@ -4,12 +4,9 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.treil.comptes.finance.Expense;
-import org.treil.comptes.formatter.CentsFormatter;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
+import java.nio.charset.Charset;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -26,7 +23,8 @@ public class CsvParser {
 
     public CsvParsedResult parse(@NotNull File file) throws IOException, ParseException {
         logger.info(String.format("Parsing file %s", file.getAbsolutePath()));
-        FileReader freader = new FileReader(file);
+        FileInputStream inputStream = new FileInputStream(file);
+        InputStreamReader freader = new InputStreamReader(inputStream, Charset.forName(options.charset));
         BufferedReader reader = new BufferedReader(freader);
         int l = 0;
         String line = reader.readLine();

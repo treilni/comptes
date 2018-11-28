@@ -1,0 +1,7 @@
+.columnHeader {
+    -fx-background-color: #bbccff;
+}
+
+.amount {
+    -fx-text-alignment: right;
+}

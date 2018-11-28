@@ -11,6 +11,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.treil.comptes.finance.Account;
 import org.treil.comptes.finance.MonthList;
 import org.treil.comptes.formatter.CentsFormatter;
 import org.treil.comptes.parser.CsvParsedResult;
@@ -19,8 +20,9 @@ import org.treil.comptes.widgets.MonthTab;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.text.ParseException;
-import java.util.Date;
+import java.util.Comparator;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
@@ -39,6 +41,9 @@ public class Main extends Application {
         // init scene
         VBox root = new VBox();
         Scene scene = new Scene(root, 300, 275);
+        URL resource = getClass().getResource("/styles.css");
+        String css = resource.toExternalForm();
+        scene.getStylesheets().add(css);
 
         // add menu bar
         root.getChildren().add(makeMenuBar());
@@ -46,9 +51,6 @@ public class Main extends Application {
         // add month tabs
         tabPane = new TabPane();
         root.getChildren().add(tabPane);
-        MonthList monthList = new MonthList(new Date());
-        MonthTab monthTab = new MonthTab(resourceBundle, monthList);
-        tabPane.getTabs().add(monthTab);
 
         // parse data
         Parameters parameters = getParameters();
@@ -61,6 +63,13 @@ public class Main extends Application {
                     System.currentTimeMillis() - startMs,
                     CentsFormatter.format(parsedResult.getInitialBalanceCents()), parsedResult.getExpenseList().size()));
 
+            Account account = new Account(parsedResult.getInitialBalanceCents(), parsedResult.getExpenseList());
+            account.getHistory().stream()
+                    .sorted(Comparator.comparing(MonthList::getMonth).reversed())
+                    .forEach(monthList -> {
+                        MonthTab monthTab = new MonthTab(resourceBundle, monthList);
+                        tabPane.getTabs().add(monthTab);
+                    });
         }
 
         // start

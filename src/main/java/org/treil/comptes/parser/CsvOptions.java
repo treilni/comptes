@@ -11,6 +11,7 @@ import java.util.Date;
  * @since 26/11/2018.
  */
 public class CsvOptions {
+    String charset = "ISO-8859-1";
     String fieldsSeparator = ";";
     char centsSeparator = ',';
     int balanceLineIndex = 0;
