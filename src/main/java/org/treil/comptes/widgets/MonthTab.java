@@ -7,11 +7,12 @@ import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 import org.treil.comptes.finance.Expense;
 import org.treil.comptes.finance.MonthList;
+import org.treil.comptes.formatter.CentsFormatter;
 import org.treil.comptes.formatter.DateFormatter;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.ResourceBundle;
+import java.util.function.Function;
 
 /**
  * @author Nicolas
@@ -25,26 +26,48 @@ public class MonthTab extends Tab {
         setText(f.format(monthList.getMonth().toDate()));
 
         VBox vPanel = new VBox();
-        TableColumn<Expense, Date> dateColumn = new TableColumn<>();
-        dateColumn.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getDate()));
-        dateColumn.setCellFactory(param -> new TableCell<Expense, Date>() {
-            @Override
-            protected void updateItem(Date d, boolean empty) {
-                setText(empty ? "" : DateFormatter.formatDay(d));
-            }
-        });
-        dateColumn.setText("Date");
 
-        table.getColumns().add(dateColumn);
-//        grid.addColumn(c = 0, new StyledCell("Date", Style.columnHeader));
-//        grid.addColumn(++c, new StyledCell("Type", Style.columnHeader));
-//        grid.addColumn(++c, new StyledCell("Origine", Style.columnHeader));
-//        grid.addColumn(++c, new StyledCell("Débit", Style.columnHeader));
-//        grid.addColumn(++c, new StyledCell("Crédit", Style.columnHeader));
+        appendColumn("Date", Expense::getDate, DateFormatter::formatDay);
+        appendColumn("Type", Expense::getType, String::toString);
+        appendColumn("Action", Expense::getAction, String::toString);
+        appendColumn("Origine", Expense::getOrigin, String::toString);
+        appendColumn("Débit", expense -> {
+            int amountCents = expense.getAmountCents();
+            return amountCents < 0 ? amountCents : null;
+        }, CentsFormatter::format, Style.amount.name());
+        appendColumn("Crédit", expense -> {
+            int amountCents = expense.getAmountCents();
+            return amountCents > 0 ? amountCents : null;
+        }, CentsFormatter::format, Style.amount.name());
+
         vPanel.getChildren().add(table);
         setContent(vPanel);
 
         display(monthList);
+    }
+
+    private <T> void appendColumn(String title, Function<Expense, T> mapper, Function<T, String> renderer) {
+        appendColumn(title, mapper, renderer, null);
+    }
+
+    private <T> void appendColumn(String title, Function<Expense, T> mapper, Function<T, String> renderer, String style) {
+        TableColumn<Expense, T> column = new TableColumn<>();
+        column.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(mapper.apply(cellData.getValue())));
+        column.setCellFactory(param -> {
+            TableCell<Expense, T> result = new TableCell<Expense, T>() {
+                @Override
+                protected void updateItem(T value, boolean empty) {
+                    setText(value == null || empty ? "" : renderer.apply(value));
+                }
+            };
+            if (style != null) {
+                result.getStyleClass().add(style);
+            }
+            return result;
+        });
+        column.setText(title);
+
+        table.getColumns().add(column);
     }
 
     private void display(@NotNull MonthList monthList) {

@@ -16,16 +16,19 @@ public class Expense {
     private final int amountCents;
 
     @Nullable
-    private String category;
+    private String type;
+
+    @Nullable
+    private String action; // virement reçu, prélèvement etc.
 
     @NotNull
     private String origin;
 
-    public Expense(@NotNull Date date, int amountCents, @NotNull String origin, @Nullable String category) {
+    public Expense(@NotNull Date date, int amountCents, @NotNull String origin, @Nullable String type) {
         this.date = date;
         this.amountCents = amountCents;
         this.origin = origin;
-        this.category = category;
+        this.type = type;
     }
 
     public Expense(@NotNull Date date, int amountCents, @NotNull String origin) {
@@ -33,12 +36,12 @@ public class Expense {
     }
 
     @Nullable
-    public String getCategory() {
-        return category;
+    public String getType() {
+        return type;
     }
 
-    public void setCategory(@Nullable String category) {
-        this.category = category;
+    public void setType(@Nullable String type) {
+        this.type = type;
     }
 
     @NotNull
@@ -53,5 +56,14 @@ public class Expense {
     @NotNull
     public String getOrigin() {
         return origin;
+    }
+
+    @Nullable
+    public String getAction() {
+        return action;
+    }
+
+    public void setAction(@Nullable String action) {
+        this.action = action;
     }
 }

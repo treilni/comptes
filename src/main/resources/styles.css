@@ -3,5 +3,5 @@
 }
 
 .amount {
-    -fx-text-alignment: right;
+    -fx-alignment: center-right;
 }

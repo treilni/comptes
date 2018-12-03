@@ -40,7 +40,7 @@ public class Main extends Application {
 
         // init scene
         VBox root = new VBox();
-        Scene scene = new Scene(root, 300, 275);
+        Scene scene = new Scene(root, 900, 700);
         URL resource = getClass().getResource("/styles.css");
         String css = resource.toExternalForm();
         scene.getStylesheets().add(css);

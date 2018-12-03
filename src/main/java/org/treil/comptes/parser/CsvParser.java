@@ -40,7 +40,10 @@ public class CsvParser {
                 String type = values[options.typeColumnIndex];
                 String action = values[options.actionColumnIndex];
                 String origin = values[options.originColumnIndex];
-                expenseList.add(new Expense(date, amountCents, origin));
+                Expense e = new Expense(date, amountCents, origin);
+                e.setType(type);
+                e.setAction(action);
+                expenseList.add(e);
             }
             line = reader.readLine();
             l++;
