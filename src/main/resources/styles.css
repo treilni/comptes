@@ -5,3 +5,8 @@
 .amount {
     -fx-alignment: center-right;
 }
+
+.balanceInfo {
+    -fx-background-color: #bbccff;
+    -fx-padding: 2mm;
+}

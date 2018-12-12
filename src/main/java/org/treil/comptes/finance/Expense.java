@@ -10,6 +10,11 @@ import java.util.Date;
  * @since 26/11/2018.
  */
 public class Expense {
+    public enum CreationType {
+        BANK, // Created from bank uploaded file
+        MANUAL // created manually by user
+    }
+
     @NotNull
     private final Date date;
 
@@ -22,17 +27,24 @@ public class Expense {
     private String action; // virement reçu, prélèvement etc.
 
     @NotNull
-    private String origin;
+    private String origin; // Bénéficiaire / Créditeur
 
-    public Expense(@NotNull Date date, int amountCents, @NotNull String origin, @Nullable String type) {
+    @NotNull
+    private Repartition repartition = new Repartition();
+
+    @NotNull
+    private CreationType creationType;
+
+    public Expense(@NotNull Date date, int amountCents, @NotNull String origin, @Nullable String type, @NotNull CreationType creationType) {
         this.date = date;
         this.amountCents = amountCents;
         this.origin = origin;
         this.type = type;
+        this.creationType = creationType;
     }
 
-    public Expense(@NotNull Date date, int amountCents, @NotNull String origin) {
-        this(date, amountCents, origin, null);
+    public Expense(@NotNull Date date, int amountCents, @NotNull String origin, CreationType creationType) {
+        this(date, amountCents, origin, null, creationType);
     }
 
     @Nullable
@@ -65,5 +77,9 @@ public class Expense {
 
     public void setAction(@Nullable String action) {
         this.action = action;
+    }
+
+    public int getCategoryRepartitionPct(@NotNull String category) {
+        return repartition.getFractionPct(category);
     }
 }

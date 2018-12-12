@@ -12,6 +12,7 @@ import java.util.*;
 public class Account {
     private String number;
     private int originalBalanceCents;
+    private final List<Category> categories = new ArrayList<>();
 
     @NotNull
     private final List<MonthList> history = new ArrayList<>();

@@ -2,7 +2,9 @@ package org.treil.comptes.widgets;
 
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
 import org.treil.comptes.finance.Expense;
@@ -26,19 +28,20 @@ public class MonthTab extends Tab {
         setText(f.format(monthList.getMonth().toDate()));
 
         VBox vPanel = new VBox();
+        vPanel.getChildren().add(makeBalanceRow(monthList, resourceBundle));
 
-        appendColumn("Date", Expense::getDate, DateFormatter::formatDay);
-        appendColumn("Type", Expense::getType, String::toString);
-        appendColumn("Action", Expense::getAction, String::toString);
-        appendColumn("Origine", Expense::getOrigin, String::toString);
-        appendColumn("Débit", expense -> {
+        appendColumn(resourceBundle.getString("date"), Expense::getDate, DateFormatter::formatDay);
+        appendColumn(resourceBundle.getString("type"), Expense::getType, String::toString);
+        appendColumn(resourceBundle.getString("action"), Expense::getAction, String::toString);
+        appendColumn(resourceBundle.getString("origin"), Expense::getOrigin, String::toString);
+        appendColumn(resourceBundle.getString("debit"), expense -> {
             int amountCents = expense.getAmountCents();
             return amountCents < 0 ? amountCents : null;
-        }, CentsFormatter::format, Style.amount.name());
-        appendColumn("Crédit", expense -> {
+        }, CentsFormatter::format, Style.amount);
+        appendColumn(resourceBundle.getString("credit"), expense -> {
             int amountCents = expense.getAmountCents();
             return amountCents > 0 ? amountCents : null;
-        }, CentsFormatter::format, Style.amount.name());
+        }, CentsFormatter::format, Style.amount);
 
         vPanel.getChildren().add(table);
         setContent(vPanel);
@@ -46,11 +49,19 @@ public class MonthTab extends Tab {
         display(monthList);
     }
 
+    private Node makeBalanceRow(@NotNull MonthList monthList, @NotNull ResourceBundle resourceBundle) {
+        HBox result = new HBox();
+        result.getChildren().add(new Label(resourceBundle.getString("solde.initial")));
+        result.getChildren().add(new Label(CentsFormatter.format(monthList.getEndBalanceCents() - monthList.getTotalCents(), "€")));
+        Style.balanceInfo.applyTo(result);
+        return result;
+    }
+
     private <T> void appendColumn(String title, Function<Expense, T> mapper, Function<T, String> renderer) {
         appendColumn(title, mapper, renderer, null);
     }
 
-    private <T> void appendColumn(String title, Function<Expense, T> mapper, Function<T, String> renderer, String style) {
+    private <T> void appendColumn(String title, Function<Expense, T> mapper, Function<T, String> renderer, Style style) {
         TableColumn<Expense, T> column = new TableColumn<>();
         column.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(mapper.apply(cellData.getValue())));
         column.setCellFactory(param -> {
@@ -61,7 +72,7 @@ public class MonthTab extends Tab {
                 }
             };
             if (style != null) {
-                result.getStyleClass().add(style);
+                style.applyTo(result);
             }
             return result;
         });

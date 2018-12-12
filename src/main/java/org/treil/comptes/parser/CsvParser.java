@@ -12,11 +12,15 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static org.treil.comptes.finance.Expense.CreationType.BANK;
+
 /**
  * @author Nicolas
  * @since 26/11/2018.
  */
 public class CsvParser {
+    public static final String CSV_SUFFIX = "csv";
+    public static final String TXT_SUFFIX = "txt";
     private static final Logger logger = LoggerFactory.getLogger(CsvParser.class);
     @NotNull
     private CsvOptions options = new CsvOptions();
@@ -40,7 +44,7 @@ public class CsvParser {
                 String type = values[options.typeColumnIndex];
                 String action = values[options.actionColumnIndex];
                 String origin = values[options.originColumnIndex];
-                Expense e = new Expense(date, amountCents, origin);
+                Expense e = new Expense(date, amountCents, origin, BANK);
                 e.setType(type);
                 e.setAction(action);
                 expenseList.add(e);

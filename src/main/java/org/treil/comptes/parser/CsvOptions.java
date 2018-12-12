@@ -31,7 +31,7 @@ public class CsvOptions {
     }
 
     @NotNull
-    int parseCents(@NotNull String s) throws ParseException {
+    int parseCents(@NotNull String s) {
         s = s.trim();
         int centsSepIndex = s.indexOf(centsSeparator);
         if (centsSepIndex >= 0 && centsSepIndex != s.length() - 3) {
