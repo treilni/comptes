@@ -1,5 +1,7 @@
 package org.treil.comptes.time;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 
 import java.text.ParseException;
@@ -15,6 +17,11 @@ public class Month implements Comparable<Month> {
     private static final String format = "yyyy-MM";
     @NotNull
     private String id;
+
+    @JsonCreator
+    private Month(@NotNull @JsonProperty("id") String id) {
+        this.id = id;
+    }
 
     public Month(@NotNull Date date) {
         id = (new SimpleDateFormat(format)).format(date);

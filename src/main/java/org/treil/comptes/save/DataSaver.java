@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.eventbus.EventBus;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,8 @@ import org.treil.comptes.finance.Account;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * @author Nicolas
@@ -81,9 +84,17 @@ public class DataSaver {
         }
     }
 
-    private void setLastSaved(File f) {
+    @NotNull
+    public Account load(@NotNull File file) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        SaveBundle saveBundle = mapper.readValue(file, SaveBundle.class);
+        List<Account> accounts = saveBundle.getAccounts();
+        return accounts.size() > 0 ? accounts.get(0) : new Account(0, Collections.emptyList());
+    }
+
+    private void setLastSaved(@NotNull File f) {
         currentSave = f;
-        eventBus.post(new SavedEvent());
+        eventBus.post(new SavedEvent(f));
     }
 
     public boolean hasCurrentSave() {

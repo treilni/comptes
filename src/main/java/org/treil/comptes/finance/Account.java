@@ -3,15 +3,16 @@ package org.treil.comptes.finance;
 import org.jetbrains.annotations.NotNull;
 import org.treil.comptes.time.Month;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
  * @author Nicolas
  * @since 26/11/2018.
  */
-public class Account {
-    private String number;
-    private int originalBalanceCents;
+public class Account implements Serializable {
+    private String number = "";
+    private int originalBalanceCents = 0;
     private final List<Category> categories = new ArrayList<>();
 
     @NotNull
@@ -20,6 +21,11 @@ public class Account {
     public Account(int originalBalanceCents, @NotNull List<Expense> expenses) {
         this.originalBalanceCents = originalBalanceCents;
         addExpenses(expenses);
+    }
+
+    @Deprecated
+    public Account() {
+        // For serialization only
     }
 
     private void addExpenses(@NotNull List<Expense> expenses) {
@@ -53,5 +59,31 @@ public class Account {
     @NotNull
     public List<MonthList> getHistory() {
         return Collections.unmodifiableList(history);
+    }
+
+    public int getExpensesCount() {
+        return history.stream().mapToInt(monthList -> monthList.getExpenses().size()).sum();
+    }
+
+    @Deprecated
+    public void setNumber(String number) {
+        this.number = number;
+    }
+
+    @Deprecated
+    public void setOriginalBalanceCents(int originalBalanceCents) {
+        this.originalBalanceCents = originalBalanceCents;
+    }
+
+    @Deprecated
+    public void setCategories(@NotNull List<Category> categories) {
+        this.categories.clear();
+        this.categories.addAll(categories);
+    }
+
+    @Deprecated
+    public void setHistory(@NotNull List<MonthList> history) {
+        this.history.clear();
+        this.history.addAll(history);
     }
 }

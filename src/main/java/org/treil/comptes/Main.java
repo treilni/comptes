@@ -49,7 +49,7 @@ public class Main extends Application {
             @Subscribe
             private void onSaved(SavedEvent event) {
                 saveItem.setDisable(false);
-                logger.info("Something was saved");
+                userPreferences.setLastSavedFile(event.getFile());
             }
         });
     }
@@ -118,19 +118,35 @@ public class Main extends Application {
             fileChooser.setTitle(resourceBundle.getString("open.file"));
             File file = fileChooser.showOpenDialog(stage);
             if (file.getName().toLowerCase().endsWith(DataSaver.SUFFIX)) {
-                // TODO : load file
-            } else {
                 loadAccountFile(file);
+            } else {
+                loadBankFile(file);
             }
         });
         return result;
     }
 
-    private void loadAccountFile(File file) {
+    private void loadAccountFile(@NotNull File f) {
+        long startMs = System.currentTimeMillis();
+        try {
+            account = saver.load(f);
+            int size = account.getHistory().size();
+            logger.info(String.format(" Done in %dms. Balance : %s / Expenses : %d",
+                    System.currentTimeMillis() - startMs,
+                    CentsFormatter.format(size > 0 ? account.getHistory().get(0).getStartBalanceCents() : 0),
+                    account.getExpensesCount()));
+
+            updateMonthTabs();
+        } catch (IOException e) {
+            logger.error(String.format("Parsing failed for file %s", f.getAbsolutePath()), e);
+            // TODO warn
+        }
+    }
+
+    private void loadBankFile(File file) {
         long startMs = System.currentTimeMillis();
         CsvParser parser = new CsvParser();
         CsvParsedResult parsedResult;
-        tabPane.getTabs().clear();
         try {
             parsedResult = parser.parse(file);
             logger.info(String.format(" Done in %dms. Balance : %s / Expenses : %d",
@@ -138,17 +154,22 @@ public class Main extends Application {
                     CentsFormatter.format(parsedResult.getInitialBalanceCents()), parsedResult.getExpenseList().size()));
 
             account = new Account(parsedResult.getInitialBalanceCents(), parsedResult.getExpenseList());
-            account.getHistory().stream()
-                    .sorted(Comparator.comparing(MonthList::getMonth).reversed())
-                    .forEach(monthList -> {
-                        MonthTab monthTab = new MonthTab(resourceBundle, monthList);
-                        tabPane.getTabs().add(monthTab);
-                    });
+            updateMonthTabs();
         } catch (IOException e) {
             // TODO warn
         } catch (ParseException e) {
             // TODO warn
         }
+    }
+
+    private void updateMonthTabs() {
+        tabPane.getTabs().clear();
+        account.getHistory().stream()
+                .sorted(Comparator.comparing(MonthList::getMonth).reversed())
+                .forEach(monthList -> {
+                    MonthTab monthTab = new MonthTab(resourceBundle, monthList);
+                    tabPane.getTabs().add(monthTab);
+                });
     }
 
     private void addExtensionFilter(FileChooser fileChooser, String i18nKey, String... extensions) {

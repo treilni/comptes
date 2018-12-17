@@ -1,6 +1,7 @@
 package org.treil.comptes.parser;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.treil.comptes.finance.Expense;
@@ -22,10 +23,10 @@ public class CsvParser {
     public static final String CSV_SUFFIX = "csv";
     public static final String TXT_SUFFIX = "txt";
     private static final Logger logger = LoggerFactory.getLogger(CsvParser.class);
-    @NotNull
-    private CsvOptions options = new CsvOptions();
 
     public CsvParsedResult parse(@NotNull File file) throws IOException, ParseException {
+        CsvOptions options = CsvOptions.guess(file);
+
         logger.info(String.format("Parsing file %s", file.getAbsolutePath()));
         FileInputStream inputStream = new FileInputStream(file);
         InputStreamReader freader = new InputStreamReader(inputStream, Charset.forName(options.charset));
@@ -33,20 +34,25 @@ public class CsvParser {
         int l = 0;
         String line = reader.readLine();
         int initialBalanceCents = 0;
-        List<Expense> expenseList = new ArrayList<Expense>();
+        List<Expense> expenseList = new ArrayList<>();
         while (line != null) {
             String[] values = line.split(options.fieldsSeparator);
             if (l == options.balanceLineIndex) {
-                initialBalanceCents = options.parseCents(values[options.balanceFieldIndex]);
+                if (options.balanceFieldIndex >= 0) {
+                    initialBalanceCents = options.parseCents(values[options.balanceFieldIndex]);
+                }
             } else {
                 Date date = options.parseDate(values[options.dateColumnIndex]);
                 int amountCents = options.parseCents(values[options.amountColumnIndex]);
-                String type = values[options.typeColumnIndex];
-                String action = values[options.actionColumnIndex];
+                String type = getValue(values, options.typeColumnIndex);
+                String action = getValue(values, options.actionColumnIndex);
                 String origin = values[options.originColumnIndex];
                 Expense e = new Expense(date, amountCents, origin, BANK);
                 e.setType(type);
                 e.setAction(action);
+                if (options.postProcessing != null) {
+                    options.postProcessing.process(e, values, options);
+                }
                 expenseList.add(e);
             }
             line = reader.readLine();
@@ -54,5 +60,10 @@ public class CsvParser {
         }
         reader.close();
         return new CsvParsedResult(initialBalanceCents, expenseList);
+    }
+
+    @Nullable
+    private String getValue(@NotNull String[] values, int index) {
+        return index < 0 ? null : values[index];
     }
 }

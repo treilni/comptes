@@ -2,6 +2,7 @@ package org.treil.comptes.finance;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
@@ -12,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author Nicolas
  * @since 04/12/2018.
  */
-public class Repartition {
+public class Repartition implements Serializable {
     public static final String NO_CATEGORY = "#";
 
     @NotNull
@@ -70,5 +71,11 @@ public class Repartition {
     public int getFractionPct(@NotNull String cat) {
         Integer result = percentByCategory.get(cat);
         return result == null ? 0 : result;
+    }
+
+    @Deprecated
+    public void setPercentByCategory(@NotNull Map<String, Integer> percentByCategory) {
+        this.percentByCategory.clear();
+        this.percentByCategory.putAll(percentByCategory);
     }
 }

@@ -1,10 +1,13 @@
 package org.treil.comptes.parser;
 
 import org.jetbrains.annotations.NotNull;
+import org.treil.comptes.finance.Expense;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.function.Consumer;
 
 /**
  * @author Nicolas
@@ -23,7 +26,31 @@ public class CsvOptions {
     int actionColumnIndex = 2;
     int originColumnIndex = 3;
     int amountColumnIndex = 4;
-    int expectedColumns = 5;
+
+    PostProcessor postProcessing = null;
+
+    private static final CsvOptions BNP_OPTIONS = new CsvOptions();
+
+    private static final CsvOptions BICS_OPTIONS = new CsvOptions(csvOptions -> {
+        csvOptions.balanceLineIndex = 0;
+        csvOptions.balanceFieldIndex = -1;
+        csvOptions.dateFormat = "dd/MM/yyyy";
+
+        csvOptions.dateColumnIndex = 2;
+        csvOptions.typeColumnIndex = -1;
+        csvOptions.actionColumnIndex = -1;
+        csvOptions.originColumnIndex = 3;
+        csvOptions.amountColumnIndex = 6;
+
+        csvOptions.postProcessing = new BicsPostProcessor();
+    });
+
+    private CsvOptions() {
+    }
+
+    private CsvOptions(Consumer<CsvOptions> init) {
+        init.accept(this);
+    }
 
     @NotNull
     Date parseDate(@NotNull String date) throws ParseException {
@@ -41,4 +68,9 @@ public class CsvOptions {
         int parsed = Integer.parseInt(s);
         return centsSepIndex >= 0 ? parsed : parsed * 100;
     }
+
+    public static CsvOptions guess(@NotNull File file) {
+        return file.getName().matches("CyberPlus.*") ? BICS_OPTIONS : BNP_OPTIONS;
+    }
+
 }
