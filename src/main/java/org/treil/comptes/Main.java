@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.treil.comptes.conf.UserPreferences;
 import org.treil.comptes.events.SavedEvent;
 import org.treil.comptes.finance.Account;
+import org.treil.comptes.finance.Category;
 import org.treil.comptes.finance.MonthList;
 import org.treil.comptes.formatter.CentsFormatter;
 import org.treil.comptes.parser.CsvParsedResult;
@@ -130,6 +131,7 @@ public class Main extends Application {
         long startMs = System.currentTimeMillis();
         try {
             account = saver.load(f);
+            account.setCategories(Category.makeSampleCategories());
             int size = account.getHistory().size();
             logger.info(String.format(" Done in %dms. Balance : %s / Expenses : %d",
                     System.currentTimeMillis() - startMs,
@@ -167,7 +169,7 @@ public class Main extends Application {
         account.getHistory().stream()
                 .sorted(Comparator.comparing(MonthList::getMonth).reversed())
                 .forEach(monthList -> {
-                    MonthTab monthTab = new MonthTab(resourceBundle, monthList);
+                    MonthTab monthTab = new MonthTab(resourceBundle, monthList, account.getCategories());
                     tabPane.getTabs().add(monthTab);
                 });
     }

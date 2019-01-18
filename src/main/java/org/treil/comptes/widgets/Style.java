@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 28/11/2018.
  */
 public enum Style {
-    columnHeader, amount, balanceInfo;
+    columnHeader, amount, balanceInfo, checkboxCell;
 
     public void applyTo(@NotNull Node node) {
         node.getStyleClass().add(this.name());

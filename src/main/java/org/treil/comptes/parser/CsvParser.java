@@ -45,11 +45,15 @@ public class CsvParser {
                 Date date = options.parseDate(values[options.dateColumnIndex]);
                 int amountCents = options.parseCents(values[options.amountColumnIndex]);
                 String type = getValue(values, options.typeColumnIndex);
-                String action = getValue(values, options.actionColumnIndex);
                 String origin = values[options.originColumnIndex];
                 Expense e = new Expense(date, amountCents, origin, BANK);
                 e.setType(type);
-                e.setAction(action);
+                if (options.actionColumnIndex >= 0) {
+                    String action = getValue(values, options.actionColumnIndex);
+                    //e.setAction(action);
+                } else {
+                    e.setAction(Expense.Action.OTHER);
+                }
                 if (options.postProcessing != null) {
                     options.postProcessing.process(e, values, options);
                 }

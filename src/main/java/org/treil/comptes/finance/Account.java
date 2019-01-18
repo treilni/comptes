@@ -75,10 +75,14 @@ public class Account implements Serializable {
         this.originalBalanceCents = originalBalanceCents;
     }
 
-    @Deprecated
     public void setCategories(@NotNull List<Category> categories) {
         this.categories.clear();
         this.categories.addAll(categories);
+    }
+
+    @NotNull
+    public List<Category> getCategories() {
+        return Collections.unmodifiableList(categories);
     }
 
     @Deprecated

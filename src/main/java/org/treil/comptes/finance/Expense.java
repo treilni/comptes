@@ -1,5 +1,7 @@
 package org.treil.comptes.finance;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,35 +49,35 @@ public class Expense implements Serializable {
     @Nullable
     private String type;
 
-    @Nullable
-    private String action; // virement reçu, prélèvement etc.
+    @NotNull
+    private Action action = Action.OTHER; // virement reçu, prélèvement etc.
 
     @NotNull
     private String origin; // Bénéficiaire / Créditeur
 
     @NotNull
-    private Repartition repartition = new Repartition();
+    private Repartition repartition;
 
     @NotNull
     private CreationType creationType;
 
-    @Deprecated
-    // FOr serialization only
-    public Expense() {
-        date = new Date();
-        amountCents = 0;
-    }
-
-    public Expense(@NotNull Date date, int amountCents, @NotNull String origin, @Nullable String type, @NotNull CreationType creationType) {
+    @JsonCreator
+    public Expense(@NotNull @JsonProperty("date") Date date,
+                   @JsonProperty("amountCents") int amountCents,
+                   @NotNull @JsonProperty("origin") String origin,
+                   @Nullable @JsonProperty("type") String type,
+                   @NotNull @JsonProperty("creationType") CreationType creationType,
+                   @NotNull @JsonProperty("repartition") Repartition repartition) {
         this.date = date;
         this.amountCents = amountCents;
         this.origin = origin;
         this.type = type;
         this.creationType = creationType;
+        this.repartition = repartition;
     }
 
     public Expense(@NotNull Date date, int amountCents, @NotNull String origin, CreationType creationType) {
-        this(date, amountCents, origin, null, creationType);
+        this(date, amountCents, origin, null, creationType, new Repartition());
     }
 
     @Nullable
@@ -101,12 +103,12 @@ public class Expense implements Serializable {
         return origin;
     }
 
-    @Nullable
-    public String getAction() {
+    @NotNull
+    public Action getAction() {
         return action;
     }
 
-    public void setAction(@Nullable String action) {
+    public void setAction(@NotNull Action action) {
         this.action = action;
     }
 
@@ -114,13 +116,7 @@ public class Expense implements Serializable {
         return repartition.getFractionPct(category);
     }
 
-    @Deprecated
-    public void setRepartition(@NotNull Repartition repartition) {
-        this.repartition = repartition;
-    }
-
-    @Deprecated
-    public void setCreationType(@NotNull CreationType creationType) {
-        this.creationType = creationType;
+    public void setOrigin(@NotNull String s) {
+        this.origin = s;
     }
 }

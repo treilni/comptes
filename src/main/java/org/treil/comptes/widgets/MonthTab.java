@@ -7,12 +7,14 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.jetbrains.annotations.NotNull;
+import org.treil.comptes.finance.Category;
 import org.treil.comptes.finance.Expense;
 import org.treil.comptes.finance.MonthList;
 import org.treil.comptes.formatter.CentsFormatter;
 import org.treil.comptes.formatter.DateFormatter;
 
 import java.text.SimpleDateFormat;
+import java.util.List;
 import java.util.ResourceBundle;
 import java.util.function.Function;
 
@@ -23,7 +25,7 @@ import java.util.function.Function;
 public class MonthTab extends Tab {
     private TableView<Expense> table = new TableView<>();
 
-    public MonthTab(ResourceBundle resourceBundle, @NotNull MonthList monthList) {
+    public MonthTab(ResourceBundle resourceBundle, @NotNull MonthList monthList, @NotNull List<Category> categories) {
         SimpleDateFormat f = new SimpleDateFormat(resourceBundle.getString("monthYearFormat"));
         setText(f.format(monthList.getMonth().toDate()));
 
@@ -31,8 +33,7 @@ public class MonthTab extends Tab {
         vPanel.getChildren().add(makeBalanceRow(monthList, resourceBundle));
 
         appendColumn(resourceBundle.getString("date"), Expense::getDate, DateFormatter::formatDay);
-        appendColumn(resourceBundle.getString("type"), Expense::getType, String::toString);
-        appendColumn(resourceBundle.getString("action"), Expense::getAction, String::toString);
+        appendColumn(resourceBundle.getString("action"), Expense::getAction, action -> resourceBundle.getString(action.getI18nCode()));
         appendColumn(resourceBundle.getString("origin"), Expense::getOrigin, String::toString);
         appendColumn(resourceBundle.getString("debit"), expense -> {
             int amountCents = expense.getAmountCents();
@@ -42,6 +43,7 @@ public class MonthTab extends Tab {
             int amountCents = expense.getAmountCents();
             return amountCents > 0 ? amountCents : null;
         }, CentsFormatter::format, Style.amount);
+        categories.forEach(category -> appendCategoryColumn(category.getName(), category.getCode()));
 
         vPanel.getChildren().add(table);
         setContent(vPanel);
@@ -78,6 +80,14 @@ public class MonthTab extends Tab {
         });
         column.setText(title);
 
+        table.getColumns().add(column);
+    }
+
+    private void appendCategoryColumn(String title, String code) {
+        TableColumn<Expense, Integer> column = new TableColumn<>();
+        column.setCellValueFactory(cellData -> new ReadOnlyObjectWrapper<>(cellData.getValue().getCategoryRepartitionPct(code)));
+        column.setCellFactory(param -> new CategoryTableCell());
+        column.setText(title);
         table.getColumns().add(column);
     }
 
