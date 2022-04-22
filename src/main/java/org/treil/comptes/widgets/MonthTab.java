@@ -23,7 +23,7 @@ import java.util.function.Function;
  * @since 26/11/2018.
  */
 public class MonthTab extends Tab {
-    private TableView<Expense> table = new TableView<>();
+    private final TableView<Expense> table = new TableView<>();
 
     public MonthTab(ResourceBundle resourceBundle, @NotNull MonthList monthList, @NotNull List<Category> categories) {
         SimpleDateFormat f = new SimpleDateFormat(resourceBundle.getString("monthYearFormat"));

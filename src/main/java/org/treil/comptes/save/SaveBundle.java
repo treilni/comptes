@@ -15,7 +15,7 @@ import java.util.List;
  */
 class SaveBundle {
     @NotNull
-    private List<Account> accounts = new ArrayList<>();
+    private final List<Account> accounts = new ArrayList<>();
 
     @JsonCreator
     public SaveBundle(@NotNull @JsonProperty("accounts") List<Account> accounts) {

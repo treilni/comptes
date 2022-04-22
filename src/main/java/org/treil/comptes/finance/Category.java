@@ -12,10 +12,10 @@ import java.util.List;
  * @since 11/12/2018.
  */
 public class Category {
-    private String code;
-    private String name;
-    private int budgetCents;
-    private boolean hasBudget;
+    private final String code;
+    private final String name;
+    private final int budgetCents;
+    private final boolean hasBudget;
 
     public Category(@NotNull String name) {
         this(name, makeCode(name), 0, false);

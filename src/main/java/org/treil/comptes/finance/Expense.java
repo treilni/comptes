@@ -42,9 +42,9 @@ public class Expense implements Serializable {
     }
 
     @NotNull
-    private Date date;
+    private final Date date;
 
-    private int amountCents;
+    private final int amountCents;
 
     @Nullable
     private String type;
@@ -56,10 +56,10 @@ public class Expense implements Serializable {
     private String origin; // Bénéficiaire / Créditeur
 
     @NotNull
-    private Repartition repartition;
+    private final Repartition repartition;
 
     @NotNull
-    private CreationType creationType;
+    private final CreationType creationType;
 
     @JsonCreator
     public Expense(@NotNull @JsonProperty("date") Date date,

@@ -15,7 +15,7 @@ import java.util.List;
 public class CsvParsedResult {
     private static final Logger logger = LoggerFactory.getLogger(CsvParsedResult.class);
 
-    private int initialBalanceCents;
+    private final int initialBalanceCents;
     @NotNull
     private final List<Expense> expenseList;
 

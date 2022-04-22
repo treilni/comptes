@@ -12,7 +12,7 @@ public class DataSaveException extends Exception {
     }
 
     @NotNull
-    private Type type;
+    private final Type type;
 
     public DataSaveException(@NotNull Type type, String message) {
         super(message);

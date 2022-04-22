@@ -40,7 +40,7 @@ public class Main extends Application {
     private final DataSaver saver;
     private Account account = new Account(0, new ArrayList<>());
     private MenuItem saveItem;
-    private UserPreferences userPreferences = new UserPreferences();
+    private final UserPreferences userPreferences = new UserPreferences();
 
     public Main() {
         EventBus eventBus = new EventBus();

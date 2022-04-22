@@ -8,8 +8,8 @@ import org.jetbrains.annotations.Nullable;
  * @since 27/11/2018.
  */
 public class CentsFormatter {
-    private static char decimalSeparator = ',';
-    private static char thousandSeparator = ' ';
+    private static final char decimalSeparator = ',';
+    private static final char thousandSeparator = ' ';
 
     public static String format(int cents) {
         return format(cents, null);

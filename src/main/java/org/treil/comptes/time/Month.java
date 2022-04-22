@@ -16,7 +16,7 @@ import java.util.Objects;
 public class Month implements Comparable<Month> {
     private static final String format = "yyyy-MM";
     @NotNull
-    private String id;
+    private final String id;
 
     @JsonCreator
     private Month(@NotNull @JsonProperty("id") String id) {
