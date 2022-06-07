@@ -42,6 +42,7 @@ public class Main extends Application {
     private MenuItem saveItem;
     private final UserPreferences userPreferences = new UserPreferences();
 
+    @SuppressWarnings("UnstableApiUsage")
     public Main() {
         EventBus eventBus = new EventBus();
         saver = new DataSaver(eventBus);
@@ -58,12 +59,13 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) {
         logger.info(String.format("Starting %s", resourceBundle.getString("appTitle")));
+        logger.debug("Using debug trace");
 
         // init scene
         VBox root = new VBox();
         Scene scene = new Scene(root, 900, 700);
         URL resource = getClass().getResource("/styles.css");
-        String css = resource.toExternalForm();
+        String css = resource != null ? resource.toExternalForm() : null;
         scene.getStylesheets().add(css);
 
         // add menu bar
@@ -158,9 +160,9 @@ public class Main extends Application {
             account = new Account(parsedResult.getInitialBalanceCents(), parsedResult.getExpenseList());
             updateMonthTabs();
         } catch (IOException e) {
-            // TODO warn
+            logger.error("IO Exception", e);
         } catch (ParseException e) {
-            // TODO warn
+            logger.warn("Parse Exception", e);
         }
     }
 

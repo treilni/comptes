@@ -26,21 +26,23 @@ public class CsvOptions {
     int actionColumnIndex = 2;
     int originColumnIndex = 3;
     int amountColumnIndex = 4;
+    int firstLineIndex = 0;
 
     PostProcessor postProcessing = null;
 
     private static final CsvOptions BNP_OPTIONS = new CsvOptions();
 
     private static final CsvOptions BICS_OPTIONS = new CsvOptions(csvOptions -> {
-        csvOptions.balanceLineIndex = 0;
+        csvOptions.balanceLineIndex = -1;
         csvOptions.balanceFieldIndex = -1;
-        csvOptions.dateFormat = "dd/MM/yyyy";
+        csvOptions.dateFormat = "yyyy-MM-dd";
 
-        csvOptions.dateColumnIndex = 2;
-        csvOptions.typeColumnIndex = -1;
+        csvOptions.dateColumnIndex = 0;
+        csvOptions.typeColumnIndex = 2;
         csvOptions.actionColumnIndex = -1;
-        csvOptions.originColumnIndex = 3;
-        csvOptions.amountColumnIndex = 6;
+        csvOptions.originColumnIndex = 4;
+        csvOptions.amountColumnIndex = 5;
+        csvOptions.firstLineIndex = 1;
 
         csvOptions.postProcessing = new BicsPostProcessor();
     });
@@ -57,7 +59,6 @@ public class CsvOptions {
         return (new SimpleDateFormat(dateFormat)).parse(date.trim());
     }
 
-    @NotNull
     int parseCents(@NotNull String s) {
         s = s.trim();
         int centsSepIndex = s.indexOf(centsSeparator);
@@ -70,7 +71,7 @@ public class CsvOptions {
     }
 
     public static CsvOptions guess(@NotNull File file) {
-        return file.getName().matches("CyberPlus.*") ? BICS_OPTIONS : BNP_OPTIONS;
+        return file.getName().matches(".*BICS.*") ? BICS_OPTIONS : BNP_OPTIONS;
     }
 
 }

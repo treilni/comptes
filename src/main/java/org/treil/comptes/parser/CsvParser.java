@@ -41,7 +41,7 @@ public class CsvParser {
                 if (options.balanceFieldIndex >= 0) {
                     initialBalanceCents = options.parseCents(values[options.balanceFieldIndex]);
                 }
-            } else {
+            } else if (l >= options.firstLineIndex) {
                 Date date = options.parseDate(values[options.dateColumnIndex]);
                 int amountCents = options.parseCents(values[options.amountColumnIndex]);
                 String type = getValue(values, options.typeColumnIndex);
@@ -58,6 +58,7 @@ public class CsvParser {
                     options.postProcessing.process(e, values, options);
                 }
                 expenseList.add(e);
+                logger.debug(String.format("Parsed line %s", line));
             }
             line = reader.readLine();
             l++;
